@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mood Playlist Generator V1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f8ff;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        select, input[type="submit"] {
+            padding: 8px 15px;
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            width: 100%;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+        #playlist-container ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #playlist-container li {
+            background-color: #e8f5e9;
+            border: 1px solid #4CAF50;
+            border-radius: 8px;
+            padding: 8px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mood Playlist Generator</h1>
+        <form action="/playlist" method="post">
+            <label for="mood">Select your mood:</label>
+            <select id="mood" name="mood" required>
+                <option value="happy">Happy</option>
+                <option value="sad">Sad</option>
+                <option value="energetic">Energetic</option>
+                <option value="relaxed">Relaxed</option>
+            </select>
+            <br><br>
+            <input type="submit" value="Get Playlist">
+        </form>
+
+        <div id="playlist-container"></div>
+    </div>
+
+    <script>
+        document.querySelector('form').onsubmit = async function(e) {
+            e.preventDefault();
+            const mood = document.getElementById('mood').value;
+            const response = await fetch('/playlist', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `mood=${mood}`
+            });
+            const data = await response.json();
+            
+            const container = document.getElementById('playlist-container');
+            container.innerHTML = '';
+            if (data.playlist) {
+                const list = document.createElement('ul');
+                data.playlist.forEach(song => {
+                    const item = document.createElement('li');
+                    item.textContent = song;
+                    list.appendChild(item);
+                });
+                container.appendChild(list);
+            } else {
+                container.innerHTML = `<p>${data.error}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

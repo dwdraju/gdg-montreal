@@ -1,0 +1,7 @@
+service: playlistmood
+runtime: python312
+env: standard 
+entrypoint: python main.py
+instance_class: F1
+automatic_scaling:
+  max_instances: 2
